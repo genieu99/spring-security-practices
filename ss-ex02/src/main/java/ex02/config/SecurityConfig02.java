@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
 
 import ex02.filter.MySecurityFilter01;
@@ -17,37 +19,15 @@ import ex02.filter.MySecurityFilter02;
 import ex02.filter.MySecurityFilter03;
 
 @Configuration
-public class SecurityConfig01 {
+public class SecurityConfig02 {
 	
 	@Bean
 	public FilterChainProxy springSecurityFilterChain() {
-		List<SecurityFilterChain> springSecurityFilterChains = Arrays.asList(
-			new SecurityFilterChain() {
-				public boolean matches(HttpServletRequest request) {
-					String uri = request.getRequestURI().replaceAll(request.getContextPath(), "");
-					return new AntPathMatcher().match("/asserts/**", uri);
-				}
-				public List<Filter> getFilters() {
-					return null;
-				}
-			},
-			
-			new SecurityFilterChain() {
-				public boolean matches(HttpServletRequest request) {
-					String uri = request.getRequestURI().replaceAll(request.getContextPath(), "");
-					return new AntPathMatcher().match("/asserts/**", uri);
-				}
-				public List<Filter> getFilters() {
-					return Arrays.asList(
-						mySecurityFilter01(),
-						mySecurityFilter02(),
-						mySecurityFilter03()
-					);
-							
-				}
-			}
+		List<SecurityFilterChain> securityFilterChains = Arrays.asList(
+			new DefaultSecurityFilterChain(new AntPathRequestMatcher("/assets/**")),
+			new DefaultSecurityFilterChain(new AntPathRequestMatcher("/**"), mySecurityFilter01(), mySecurityFilter02(), mySecurityFilter03())
 		);
-		return new FilterChainProxy(springSecurityFilterChains);
+		return new FilterChainProxy(securityFilterChains);
 	}
 	
 	@Bean
