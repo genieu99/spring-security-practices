@@ -12,6 +12,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig03 {
+	
+	@Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return new WebSecurityCustomizer() {
             @Override
@@ -25,6 +27,16 @@ public class SecurityConfig03 {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.build();
+		http
+				.formLogin()
+			.and()
+				// BasicAuthenticationFilter
+				.httpBasic()
+			.and()
+				.authorizeRequests( /* Access Control List */ )
+				.anyRequest()
+				.permitAll();
+		
+		return http.build();
     }
 }
